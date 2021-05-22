@@ -20,7 +20,8 @@ import static com.xivs.client.gui.windows.CreateUpdateObjectWindow.CREATE;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 
 public class MainMenuBar extends JMenuBar {
-    public MainMenuBar(){
+
+    public MainMenuBar(MainWindow window){
         super();
         JMenu instruments = new JMenu("Инструменты");
         JMenuItem removeAllByPosition = new JMenuItem("Удалить всех опр. должности");
@@ -31,6 +32,9 @@ public class MainMenuBar extends JMenuBar {
         JMenu server = new JMenu("Сервер");
         JMenuItem info = new JMenuItem ("Информация");
         JMenuItem exit = new JMenuItem ("Отключиться");
+        JMenu visual = new JMenu("Визуализация");
+        JMenuItem table = new JMenuItem("Таблица");
+        JMenuItem graphics = new JMenuItem("Графика");
         createWorker.addActionListener((e)-> new CreateUpdateObjectWindow(CREATE, null));
         removeAllByPosition.addActionListener((e)->new RemoveAllByPositionWindow());
         executeScript.addActionListener((e)->{
@@ -64,6 +68,8 @@ public class MainMenuBar extends JMenuBar {
 
             new LoginWindow(new Dimension(500, 300));
         });
+        table.addActionListener((e)->window.setVisualization(1));
+        graphics.addActionListener((e)->window.setVisualization(2));
         instruments.add(removeAllByPosition);
         instruments.add(removeGreater);
         instruments.add(createWorker);
@@ -71,8 +77,11 @@ public class MainMenuBar extends JMenuBar {
         instruments.add(clear);
         server.add(info);
         server.add(exit);
+        visual.add(table);
+        visual.add(graphics);
         add(instruments);
         add(server);
+        add(visual);
 
 
 

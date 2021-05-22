@@ -4,6 +4,7 @@ import com.xivs.client.data.*;
 import com.xivs.client.gui.components.FilteringForm;
 import com.xivs.client.gui.components.SortingForm;
 import com.xivs.client.gui.components.WorkersTable;
+import com.xivs.client.gui.visualization.VisualPanel;
 import com.xivs.client.gui.windows.CreateUpdateObjectWindow;
 import com.xivs.client.gui.windows.LoginWindow;
 import com.xivs.client.gui.windows.MainWindow;
@@ -34,8 +35,14 @@ public class ClientMain {
 
 
 
-        //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         new LoginWindow(new Dimension(500, 300));
+        //JFrame temp = new JFrame();
+        //temp.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        //temp.setVisible(true);
+        //temp.setPreferredSize(new Dimension(1200, 700));
+        //temp.add(new VisualPanel(null, new Dimension(1200, 700)));
+        //temp.pack();
 
 
 
