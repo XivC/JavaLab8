@@ -35,8 +35,8 @@ public class AddressBuilderForm extends BuilderForm<Address> {
     void initFields() {
         streetField = new JTextField();
         zipCodeField = new JTextField();
-        fields.put("Улица", new Pair<>(streetField, true));
-        fields.put("Почтовый индекс", new Pair<>(zipCodeField, false));
+        fields.put(res.getString("address"), new Pair<>(streetField, true));
+        fields.put(res.getString("zip_code"), new Pair<>(zipCodeField, false));
 
 
     }

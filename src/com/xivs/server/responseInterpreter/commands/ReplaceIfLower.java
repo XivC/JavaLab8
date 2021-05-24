@@ -23,18 +23,18 @@ public class ReplaceIfLower extends Command {
         Float salary = (Float) rq.attachments.get("salary").get();
         try {
             if (manager.replaceIfLower(key, salary, rq.auth.login)) {
-                messages.add("Элемент обновлён");
+                messages.add("Item updated");
             } else {
-                messages.add("Элемент не обновлён");
+                messages.add("Item not updated");
             }
         } catch (NotFoundException ex) {
-            messages.add("Элемент не найден");
+            messages.add("Item not found");
         }
         catch(SQLException ex) {
-            messages.add("Внутренняя ошибка сервера");
+            messages.add("Internal server error");
         }
         catch(IllegalDataAccessException ex){
-            messages.add("У вас нет доступа к данному элементу");
+            messages.add("Illegal item access");
         }
 
         return new Response(Response.Status.OK, messages, new HashMap<>());

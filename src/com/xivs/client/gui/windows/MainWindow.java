@@ -44,19 +44,27 @@ public class MainWindow extends JFrame {
         client = APP.client;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(1280,720));
+        setMinimumSize(new Dimension(1280, 720));
         FilteredWorkersDataProvider filter = new FilteredWorkersDataProvider(new WorkersDataProvider(client));
         SortedWorkersDataProvider sorted = new SortedWorkersDataProvider(filter);
         setJMenuBar(new MainMenuBar(this));
-        JPanel flow = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        Container contentPane = getContentPane();
+        contentPane.setLayout(new FlowLayout(FlowLayout.CENTER));
         collectionPanel = new JPanel(new CardLayout());
+        collectionPanel.setPreferredSize(new Dimension(1000, 500));
         collectionPanel.add(new WorkersTable(sorted, new Dimension(1000, 500)), "table" );
         visualPanel = new VisualPanel(filter, new Dimension(1000, 500));
         collectionPanel.add( visualPanel, "graphics");
-        Container contentPane = getContentPane();
-        flow.add(collectionPanel);
-        flow.add(new SortingForm(sorted, new Dimension(420, 30)));
-        flow.add(new FilteringForm(filter, new Dimension(900, 30)));
-        contentPane.add(flow);
+        SortingForm sortingForm = new SortingForm(sorted, new Dimension(420, 30));
+        FilteringForm filteringForm = new FilteringForm(filter, new Dimension(800, 30));
+        JPanel sortAndFilterPanel = new JPanel(new GridLayout(2,1,5,15));
+        JPanel flowSortAndFilter = new JPanel(new FlowLayout());
+        sortAndFilterPanel.add(sortingForm);
+        sortAndFilterPanel.add(filteringForm);
+        flowSortAndFilter.add(sortAndFilterPanel);
+        contentPane.add(collectionPanel);
+        contentPane.add(flowSortAndFilter);
+
         pack();
 
 

@@ -11,7 +11,10 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.ResourceBundle;
 import java.util.function.Predicate;
+
+import static com.xivs.client.Application.APP;
 
 public class FilteringForm extends JPanel {
     private final FilteredWorkersDataProvider provider;
@@ -20,79 +23,82 @@ public class FilteringForm extends JPanel {
     JTextField upperBoundField;
     JTextField containsField;
     Predicate<WorkerContainer> filter = (p)->true;
-
+    ResourceBundle res = APP.getResources();
     public FilteringForm(FilteredWorkersDataProvider provider, Dimension size){
         super();
         ActionListener comboActionListener = e -> {
             try {
                 JComboBox<String> box = (JComboBox<String>) e.getSource();
                 String item = (String) box.getSelectedItem();
-                switch (Objects.requireNonNull(item)) {
-                    case "Ключу" -> {
+
+                new JComboBox<>(new String[]{res.getString("no_filter"),res.getString("key"), res.getString("owner"), res.getString("id"), res.getString("name"), res.getString("creation_date"), res.getString("salary"), res.getString("end_date"), res.getString("status"), res.getString("position"), res.getString("x"), res.getString("y"), res.getString("address"), res.getString("zip_code"), res.getString("organization_type"), res.getString("annual_turnover")});
+
+                assert item != null;
+                if (item.equals(res.getString("key")))  {
                         ((CardLayout) this.cards.getLayout()).show(cards, "contains");
                         this.filter = (p) -> p.key.contains(containsField.getText());
                     }
-                    case "Владельцу" -> {
+                if (item.equals(res.getString("owner"))) {
                         ((CardLayout) this.cards.getLayout()).show(cards, "contains");
                         this.filter = (p) -> p.owner.contains(containsField.getText());
                     }
-                    case "Имени рабочего" -> {
+                if (item.equals(res.getString("name"))) {
                         ((CardLayout) this.cards.getLayout()).show(cards, "contains");
                         this.filter = (p) -> p.name.contains(containsField.getText());
                     }
-                    case "id" -> {
+                if (item.equals(res.getString("id"))) {
                         ((CardLayout) this.cards.getLayout()).show(cards, "contains");
                         this.filter = (p) -> String.valueOf(p.id).contains(containsField.getText());
                     }
-                    case "Дате создания" -> {
+                if (item.equals(res.getString("creation_date")))  {
                         ((CardLayout) this.cards.getLayout()).show(cards, "lowup");
                         this.filter = (p) -> p.creationDate.isAfter(LocalDateParser.parse(lowerBoundField.getText(), LocalDate.MIN)) && p.creationDate.isBefore(LocalDateParser.parse(upperBoundField.getText(), LocalDate.MAX));
                     }
-                    case "Зарплате" -> {
+                if (item.equals(res.getString("salary"))) {
                         ((CardLayout) this.cards.getLayout()).show(cards, "lowup");
                         this.filter = (p) -> FloatParser.parse(lowerBoundField.getText(), Float.MIN_VALUE) <= p.salary && p.salary <= FloatParser.parse(upperBoundField.getText(), Float.MAX_VALUE);
                     }
-                    case "Дате окончания контракта" -> {
+                if (item.equals(res.getString("end_date"))) {
                         ((CardLayout) this.cards.getLayout()).show(cards, "lowup");
                         this.filter = (p) -> p.endDate.isAfter(LocalDateParser.parse(lowerBoundField.getText(), LocalDate.MIN)) && p.endDate.isBefore(LocalDateParser.parse(upperBoundField.getText(), LocalDate.MAX));
                     }
-                    case "Статусу" -> {
+                if (item.equals(res.getString("status"))) {
                         ((CardLayout) this.cards.getLayout()).show(cards, "contains");
                         this.filter = (p) -> String.valueOf(p.status).contains(containsField.getText());
                     }
-                    case "Должности" -> {
+                if (item.equals(res.getString("position"))) {
                         ((CardLayout) this.cards.getLayout()).show(cards, "contains");
                         this.filter = (p) -> String.valueOf(p.position).contains(containsField.getText());
                     }
-                    case "X" -> {
+                if (item.equals(res.getString("x"))) {
                         ((CardLayout) this.cards.getLayout()).show(cards, "lowup");
                         this.filter = (p) -> LongParser.parse(lowerBoundField.getText(), Long.MIN_VALUE) <= p.x && p.x <= LongParser.parse(upperBoundField.getText(), Long.MAX_VALUE);
                     }
-                    case "Y" -> {
+                if (item.equals(res.getString("y"))) {
                         ((CardLayout) this.cards.getLayout()).show(cards, "lowup");
                         this.filter = (p) -> DoubleParser.parse(lowerBoundField.getText(), Double.MIN_VALUE) <= p.y && p.y <= DoubleParser.parse(upperBoundField.getText(), Double.MAX_VALUE);
                     }
-                    case "Адресу организации" -> {
+                if (item.equals(res.getString("address"))) {
                         ((CardLayout) this.cards.getLayout()).show(cards, "contains");
                         this.filter = (p) -> p.street.contains(containsField.getText());
                     }
-                    case "Почтовому индексу организации" -> {
+                if (item.equals(res.getString("zip_code"))) {
                         ((CardLayout) this.cards.getLayout()).show(cards, "contains");
                         this.filter = (p) -> p.zipCode.contains(containsField.getText());
                     }
-                    case "Типу организации" -> {
+                if (item.equals(res.getString("organization_type"))) {
                         ((CardLayout) this.cards.getLayout()).show(cards, "contains");
                         this.filter = (p) -> String.valueOf(p.type).contains(containsField.getText());
                     }
-                    case "Годовому обороту организации" -> {
+                if (item.equals(res.getString("annual_turnover"))) {
                         ((CardLayout) this.cards.getLayout()).show(cards, "lowup");
                         this.filter = (p) -> IntegerParser.parse(lowerBoundField.getText(), Integer.MIN_VALUE) <= p.annualTurnover && p.annualTurnover <= IntegerParser.parse(upperBoundField.getText(), Integer.MAX_VALUE);
                     }
-                    case "Не фильтровать" -> {
+                if (item.equals(res.getString("no_filter"))) {
                         ((CardLayout) this.cards.getLayout()).show(cards, "contains");
                         this.filter = (p) -> true;
                     }
-                }
+
             }
             catch (NullPointerException ex) {return;}
 
@@ -105,12 +111,12 @@ public class FilteringForm extends JPanel {
         this.provider = provider;
         GridLayout layout = new GridLayout(1, 4, 5, 12);
         setLayout(layout);
-        JComboBox<String> filterComboBox = new JComboBox<>(new String[]{"Не фильтровать","Ключу", "Владельцу", "id", "Имени рабочего", "Дате создания", "Зарплате", "Дате окончания контракта", "Статусу", "Должности", "X", "Y", "Адресу организации", "Почтовому индексу организации", "Типу организации", "Годовому обороту организации"});
-        lowerBoundField = new HintTextField("Нижняя граница");
-        upperBoundField = new HintTextField("Верхняя граница");
-        containsField = new HintTextField("Содержит");
+        JComboBox<String> filterComboBox = new JComboBox<>(new String[]{res.getString("no_filter"),res.getString("key"), res.getString("owner"), res.getString("id"), res.getString("name"), res.getString("creation_date"), res.getString("salary"), res.getString("end_date"), res.getString("status"), res.getString("position"), res.getString("x"), res.getString("y"), res.getString("address"), res.getString("zip_code"), res.getString("organization_type"), res.getString("annual_turnover")});
+        lowerBoundField = new HintTextField(res.getString("lower_bound"));
+        upperBoundField = new HintTextField(res.getString("upper_bound"));
+        containsField = new HintTextField(res.getString("contains"));
         filterComboBox.addActionListener(comboActionListener);
-        JButton button = new JButton("Фильтровать");
+        JButton button = new JButton(res.getString("filter"));
         button.addActionListener(buttonActionListener);
         cards = new JPanel(new CardLayout());
         JPanel lowUpCard = new JPanel(new GridLayout(1, 2, 10, 12));
@@ -118,7 +124,7 @@ public class FilteringForm extends JPanel {
         lowUpCard.add(upperBoundField);
         cards.add(lowUpCard, "lowup");
         cards.add(containsField, "contains");
-        add(new JLabel("Фильтровать по ", SwingConstants.RIGHT));
+        add(new JLabel(res.getString("filter_by"), SwingConstants.RIGHT));
         add(filterComboBox);
         add(cards);
         add(button);

@@ -16,6 +16,7 @@ import com.xivs.common.lab.*;
 
 import java.awt.*;
 import java.util.HashMap;
+import java.util.ResourceBundle;
 import javax.swing.*;
 
 import static com.xivs.client.Application.APP;
@@ -30,7 +31,7 @@ public class CreateUpdateObjectWindow extends JFrame {
     Client client;
     public static int UPDATE = 0;
     public static int CREATE = 1;
-
+    ResourceBundle res = APP.getResources();
     private void setMessage(String message, Color color){
         messageLabel.setText(message);
         messageLabel.setForeground(color);
@@ -48,7 +49,7 @@ public class CreateUpdateObjectWindow extends JFrame {
     private void updateCreate(boolean create){
         Worker worker = build();
 
-        if(worker == null) {setMessage("Не все поля заполнены верно", Color.RED); return;}
+        if(worker == null) {setMessage(res.getString("field_filling_error"), Color.RED); return;}
         HashMap<String, DataTransference<?>> arguments = new HashMap<>();
         if(!create) arguments.put("id", new DataTransference<>(Long.class, client.getWorkers().get(keyField.getText()).id));
         else arguments.put("key", new DataTransference<>(String.class, keyField.getText()));
@@ -93,8 +94,9 @@ public class CreateUpdateObjectWindow extends JFrame {
         container.setLayout(new FlowLayout());
 
 
-        client.addConnectionLostEvent(()->setMessage("Потеряно соединение с сервером", Color.red));
-        client.addConnectionRestoredEvent(()->setMessage("Соединение восстановлено", Color.green));
+        client.addConnectionLostEvent(()->setMessage(res.getString("server_lost_connection"), Color.red));
+        client.addConnectionRestoredEvent(()->setMessage(res.getString("server_connection_restored"), Color.green));
+
 
 
         JPanel forms = new JPanel();
@@ -105,10 +107,10 @@ public class CreateUpdateObjectWindow extends JFrame {
         CoordinatesBuilderForm coordinatesForm = new CoordinatesBuilderForm(new Dimension(500, 110), defaultWorker == null ? null : defaultWorker.coordinates);
         OrganizationBuilderForm organizationForm = new OrganizationBuilderForm(new Dimension(500, 110),defaultWorker == null ? null :  defaultWorker.organization);
         AddressBuilderForm addressForm = new AddressBuilderForm(new Dimension(500, 110), defaultWorker == null ? null : defaultWorker.organization.officialAddress);
-        workersFormWrapper = new MinimizableBuilderWrapper<>(workersForm, null, "Ввод рабочего", new Dimension(500, 100), false);
-        coordinatesFormWrapper = new MinimizableBuilderWrapper<>(coordinatesForm, null, "Ввод координат", new Dimension(500, 100), false);
-        organizationFormWrapper = new MinimizableBuilderWrapper<>(organizationForm, Organization.DEFAULT, "Ввод организации", new Dimension(500, 100), true);
-        addressFormWrapper = new MinimizableBuilderWrapper<>(addressForm, Address.DEFAULT, "Ввод адреса организации", new Dimension(500, 100), true);
+        workersFormWrapper = new MinimizableBuilderWrapper<>(workersForm, null, res.getString("worker_input"), new Dimension(500, 100), false);
+        coordinatesFormWrapper = new MinimizableBuilderWrapper<>(coordinatesForm, null, res.getString("coordinates_input"), new Dimension(500, 100), false);
+        organizationFormWrapper = new MinimizableBuilderWrapper<>(organizationForm, Organization.DEFAULT, res.getString("organization_input"), new Dimension(500, 100), true);
+        addressFormWrapper = new MinimizableBuilderWrapper<>(addressForm, Address.DEFAULT, res.getString("address_input"), new Dimension(500, 100), true);
         workersFormWrapper.setHeaderFont(new Font("Tacoma", Font.BOLD, 11));
         coordinatesFormWrapper.setHeaderFont(new Font("Tacoma", Font.BOLD, 11));
         organizationFormWrapper.setHeaderFont(new Font("Tacoma", Font.BOLD, 11));
@@ -127,7 +129,7 @@ public class CreateUpdateObjectWindow extends JFrame {
 
         messageLabel = new JLabel();
         keyField = new JTextField();
-        JLabel keyLabel = new JLabel("Ключ");
+        JLabel keyLabel = new JLabel(res.getString("key"));
         keyLabel.setFont(new Font("Tacoma", Font.BOLD, 11));
         if (defaultWorker != null){ keyField.setText(key); keyField.setEnabled(false);};
         JPanel keyPanel = new JPanel(new GridLayout(1,2,5,12));
@@ -138,9 +140,9 @@ public class CreateUpdateObjectWindow extends JFrame {
         container.add(messageLabel);
         container.add(keyPanel);
         container.add(forms_pane);
-        JButton updateButton = new JButton("Обновить");
-        JButton deleteButton = new JButton("Удалить");
-        JButton createButton = new JButton("Создать");
+        JButton updateButton = new JButton(res.getString("update"));
+        JButton deleteButton = new JButton(res.getString("delete"));
+        JButton createButton = new JButton(res.getString("create"));
         updateButton.addActionListener((e)->updateCreate(false));
         deleteButton.addActionListener((e)-> delete());
         createButton.addActionListener((e)->updateCreate(true));

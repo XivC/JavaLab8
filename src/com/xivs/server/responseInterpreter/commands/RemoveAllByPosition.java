@@ -19,7 +19,7 @@ public class RemoveAllByPosition extends Command {
         Position position = (Position) rq.attachments.get("position").get();
         manager.removeAllByPosition(position, rq.auth.login);
         ArrayList<String> messages = new ArrayList<>();
-        messages.add("Выполнено");
+        messages.add("Success");
         return new Response(Response.Status.OK, messages, new HashMap<>());
     }
 

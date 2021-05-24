@@ -9,13 +9,14 @@ import com.xivs.common.lab.Worker;
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
+import java.util.ResourceBundle;
 
 import static com.xivs.client.Application.APP;
 
 public class InfoWindow extends JFrame {
     JLabel messageLabel;
 
-
+    ResourceBundle res = APP.getResources();
     private void setMessage(String message, Color color){
         messageLabel.setText(message);
         messageLabel.setForeground(color);
@@ -25,8 +26,8 @@ public class InfoWindow extends JFrame {
         super();
         setDefaultCloseOperation(HIDE_ON_CLOSE);
         Client client = APP.client;
-        client.addConnectionLostEvent(()->setMessage("Потеряно соединение с сервером", Color.red));
-        client.addConnectionRestoredEvent(()->setMessage("Соединение восстановлено", Color.green));
+        client.addConnectionLostEvent(()->setMessage(res.getString("server_lost_connection"), Color.red));
+        client.addConnectionRestoredEvent(()->setMessage(res.getString("server_connection_restored"), Color.green));
         Container contentPane = getContentPane();
         contentPane.setLayout(new FlowLayout());
         setPreferredSize(new Dimension(800, 200));
@@ -35,9 +36,9 @@ public class InfoWindow extends JFrame {
         messageLabel = new JLabel();
         contentPane.add(messageLabel);
         JPanel form = new JPanel(new GridLayout(3,2,5,12));
-        JLabel creationTimeLabel = new JLabel("Дата и время создания");
-        JLabel itemsCountLabel = new JLabel("Кол-во элементов");
-        JLabel typeLabel = new JLabel("Тип коллекции");
+        JLabel creationTimeLabel = new JLabel(res.getString("creation_date_time"));
+        JLabel itemsCountLabel = new JLabel(res.getString("items_count"));
+        JLabel typeLabel = new JLabel(res.getString("collection_type"));
         JLabel creationTime = new JLabel();
         JLabel itemsCount = new JLabel();
         JLabel type = new JLabel();

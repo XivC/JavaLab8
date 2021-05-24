@@ -9,99 +9,102 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
+
+import static com.xivs.client.Application.APP;
 
 public class SortingForm extends JPanel {
-
+    ResourceBundle res = APP.getResources();
     public SortingForm(SortedWorkersDataProvider provider, Dimension size){
         super();
         ActionListener sortActionListener = e -> {
             JComboBox<String> box = (JComboBox<String>)e.getSource();
             String item = (String)box.getSelectedItem();
-            switch (item) {
-                case "Ключу" -> {
+
+            if(item.equals(res.getString("key")))  {
                     provider.setSortField("key");
                     provider.sort();
                 }
-                case "Владельцу" -> {
+            if(item.equals(res.getString("owner"))) {
                     provider.setSortField("owner");
                     provider.sort();
                 }
-                case "Имени рабочего" -> {
+            if(item.equals(res.getString("name"))) {
                     provider.setSortField("name");
                     provider.sort();
                 }
-                case "id" -> {
+            if(item.equals(res.getString("id"))) {
                     provider.setSortField("id");
                     provider.sort();
                 }
-                case "Дате создания" -> {
+            if(item.equals(res.getString("creation_date")))  {
                     provider.setSortField("creationDate");
                     provider.sort();
                 }
-                case "Зарплате" -> {
+            if(item.equals(res.getString("salary")))  {
                     provider.setSortField("salary");
                     provider.sort();
                 }
-                case "Дате окончания контракта" -> {
+            if(item.equals(res.getString("end_date")))  {
                     provider.setSortField("endDate");
                     provider.sort();
                 }
-                case "Статусу" -> {
+            if(item.equals(res.getString("status")))  {
                     provider.setSortField("status");
                     provider.sort();
                 }
-                case "Должности" -> {
+            if(item.equals(res.getString("position")))  {
                     provider.setSortField("position");
                     provider.sort();
                 }
-                case "X" -> {
+            if(item.equals(res.getString("x")))  {
                     provider.setSortField("x");
                     provider.sort();
                 }
-                case "Y" -> {
+            if(item.equals(res.getString("y")))  {
                     provider.setSortField("y");
                     provider.sort();
                 }
-                case "Адресу организации" -> {
+            if(item.equals(res.getString("address")))  {
                     provider.setSortField("street");
                     provider.sort();
                 }
-                case "Почтовому индексу организации" -> {
+            if(item.equals(res.getString("zip_code")))  {
                     provider.setSortField("zipCode");
                     provider.sort();
                 }
-                case "Типу организации" -> {
+            if(item.equals(res.getString("organization_type")))  {
                     provider.setSortField("type");
                     provider.sort();
                 }
-                case "Годовому обороту организации" -> {
+            if(item.equals(res.getString("annual_turnover")))  {
                     provider.setSortField("annualTurnover");
                     provider.sort();
                 }
-            }
+
 
         };
         ActionListener modeActionListener = e -> {
             JComboBox<String> box = (JComboBox<String>)e.getSource();
             String item = (String)box.getSelectedItem();
-            switch(item){
-                case "Убывания": provider.setSortMode(SortedWorkersDataProvider.DESCENDING); provider.sort();break;
-                case "Возрастания": provider.setSortMode(SortedWorkersDataProvider.ASCENDING); provider.sort();break;
 
-            }
+                if(item.equals(res.getString("descending"))) {provider.setSortMode(SortedWorkersDataProvider.DESCENDING); provider.sort();}
+                if(item.equals(res.getString("ascending")))  {provider.setSortMode(SortedWorkersDataProvider.ASCENDING); provider.sort();}
+
+
 
         };
 
         setPreferredSize(size);
         GridLayout layout = new GridLayout(1, 4, 10, 12);
-        JComboBox<String> sortComboBox = new JComboBox<>(new String[]{"","Ключу", "Владельцу", "id", "Имени рабочего", "Дате создания", "Зарплате", "Дате окончания контракта", "Статусу", "Должности", "X", "Y", "Адресу организации", "Почтовому индексу организации", "Типу организации", "Годовому обороту организации"});
-        JComboBox<String> modeComboBox = new JComboBox<>(new String[]{"","Убывания", "Возрастания"});
+        JComboBox<String> sortComboBox = new JComboBox<>(new String[]{"",res.getString("key"), res.getString("owner"), res.getString("id"), res.getString("name"), res.getString("creation_date"), res.getString("salary"), res.getString("end_date"), res.getString("status"), res.getString("position"), res.getString("x"), res.getString("y"), res.getString("address"), res.getString("zip_code"), res.getString("organization_type"), res.getString("annual_turnover")});
+        JComboBox<String> modeComboBox = new JComboBox<>(new String[]{"",res.getString("descending"), res.getString("ascending")});
         sortComboBox.addActionListener(sortActionListener);
         modeComboBox.addActionListener(modeActionListener);
         setLayout(layout);
-        add(new JLabel("Сортировать по ", SwingConstants.RIGHT));
+        add(new JLabel(res.getString("sort_by"), SwingConstants.RIGHT));
         add(sortComboBox);
-        add(new JLabel("в порядке ", SwingConstants.RIGHT));
+        add(new JLabel(res.getString("in_order"), SwingConstants.RIGHT));
         add(modeComboBox);
 
 

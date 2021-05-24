@@ -5,10 +5,13 @@ import com.xivs.common.Utils.Pair;
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
+import java.util.ResourceBundle;
+
+import static com.xivs.client.Application.APP;
 
 public abstract class BuilderForm<T> extends JPanel implements Builder<T> {
     T defaultValue;
-
+    ResourceBundle res = APP.getResources();
     public abstract T build();
     abstract void initFields();
     void initDefaultValues(){};

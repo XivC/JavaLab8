@@ -21,12 +21,12 @@ public class Register extends Command{
 
         }
         catch(SQLException ex){
-            messages.add("Внутренняя ошибка сервера");
+            messages.add("Internal server error");
             logger.error(ex.getMessage());
             return new Response(Response.Status.ERROR, messages, new HashMap<>());
         }
         catch(UserAlreadyExistsException ex){
-            messages.add("данное имя пользователя уже занято");
+            messages.add("Username already exists");
             return new Response(Response.Status.ERROR, messages, new HashMap<>());
 
         }

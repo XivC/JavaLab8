@@ -59,11 +59,11 @@ public class WorkerBuilderForm extends BuilderForm<Worker> {
         endDateField = new HintTextField("YYYY-MM-DD");
         positionField = initPositionField();
         statusField = initStatusField();
-        fields.put("Имя", new Pair<>(nameField, false));
-        fields.put("Зарплата", new Pair<>(salaryField, false));
-        fields.put("Дата окончания контракта", new Pair<>(endDateField, true));
-        fields.put("Должность", new Pair<>(positionField, false));
-        fields.put("Статус", new Pair<>(statusField, true));
+        fields.put(res.getString("name"), new Pair<>(nameField, false));
+        fields.put(res.getString("salary"), new Pair<>(salaryField, false));
+        fields.put(res.getString("end_date"), new Pair<>(endDateField, true));
+        fields.put(res.getString("position"), new Pair<>(positionField, false));
+        fields.put(res.getString("status"), new Pair<>(statusField, true));
 
     }
     private JComboBox<Position> initPositionField(){

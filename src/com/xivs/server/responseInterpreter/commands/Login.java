@@ -16,15 +16,15 @@ public class Login extends Command {
     public Response execute(Request rq) {
         ArrayList<String> messages = new ArrayList<>();
         try {
-            if (interpreter.controller.checkExistence(rq.auth.login, rq.auth.password)) messages.add("Авторизация прошла успешно");
+            if (interpreter.controller.checkExistence(rq.auth.login, rq.auth.password)) messages.add("Authorization complete successfully");
             else {
-                messages.add("Неверный логин или пароль");
+                messages.add("Account doesn't match");
                 return new Response(Response.Status.ERROR, messages, new HashMap<>());
             }
 
         }
         catch(SQLException ex){
-                messages.add("Внутренняя ошибка сервера");
+                messages.add("Internal server error");
                 logger.error(ex.getMessage());
             return new Response(Response.Status.ERROR, messages, new HashMap<>());
         }

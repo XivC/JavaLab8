@@ -10,13 +10,14 @@ import com.xivs.common.lab.Worker;
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
+import java.util.ResourceBundle;
 
 import static com.xivs.client.Application.APP;
 
 public class RemoveGreaterWindow extends JFrame {
     JLabel messageLabel;
     JTextField salaryField;
-
+    ResourceBundle res = APP.getResources();
     private void setMessage(String message, Color color){
         messageLabel.setText(message);
         messageLabel.setForeground(color);
@@ -26,8 +27,8 @@ public class RemoveGreaterWindow extends JFrame {
         super();
         setDefaultCloseOperation(HIDE_ON_CLOSE);
         Client client = APP.client;
-        client.addConnectionLostEvent(()->setMessage("Потеряно соединение с сервером", Color.red));
-        client.addConnectionRestoredEvent(()->setMessage("Соединение восстановлено", Color.green));
+        client.addConnectionLostEvent(()->setMessage(res.getString("server_lost_connection"), Color.red));
+        client.addConnectionRestoredEvent(()->setMessage(res.getString("server_connection_restored"), Color.green));
         Container contentPane = getContentPane();
         contentPane.setLayout(new FlowLayout());
 
@@ -36,13 +37,13 @@ public class RemoveGreaterWindow extends JFrame {
         messageLabel = new JLabel();
         salaryField = new JTextField();
         salaryField.setPreferredSize(new Dimension(250, 50));
-        JButton delete = new JButton("Удалить");
+        JButton delete = new JButton(res.getString("delete"));
 
         delete.setPreferredSize(new Dimension(250, 50));
         delete.addActionListener((e)->
         {
             if (!Worker.Params.salary.parse(salaryField.getText())){
-                setMessage("Не все поля заполнены верно", Color.RED);
+                setMessage(res.getString("field_filling_error"), Color.RED);
                 return;
             }
             HashMap<String, DataTransference<?>> arguments = new HashMap<>();

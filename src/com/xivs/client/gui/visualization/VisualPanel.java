@@ -67,8 +67,8 @@ public class VisualPanel extends JPanel{
                 color_b_norm[i] = (byte)Math.abs(color_b[i]);
             }
             Color color = new Color(color_b_norm[0], color_b_norm[1], color_b_norm[2]);
-            double velocity_x = -1 + Math.random() * (2);
-            double velocity_y = -1 + Math.random() * (2);
+            double velocity_x = -3 + Math.random() * (6);
+            double velocity_y = -3 + Math.random() * (6);
             double norm_x = (double)(c.x)/(double)(max_x);
 
             WorkerCircle wc = new WorkerCircle((double)(size.width)/2, (double)size.height/2, radius, 70 + norm_x * (size.width - 140), c.y, velocity_x, velocity_y, c.key, color);
@@ -120,7 +120,7 @@ public class VisualPanel extends JPanel{
 
             @Override
             public void mousePressed(MouseEvent e) {
-                System.out.println("pressed");
+
                 int m_x = e.getX();
                 int m_y = e.getY();
 

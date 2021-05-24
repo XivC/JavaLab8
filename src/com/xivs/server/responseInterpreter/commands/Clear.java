@@ -19,11 +19,11 @@ public class Clear extends Command {
         try {
             manager.clear(rq.auth.login);
 
-            messages.add("Коллекция очищена");
+            messages.add("Collection cleared");
             return new Response(Response.Status.OK, messages, new HashMap<>());
         }
         catch (SQLException ex){
-            messages.add("Внутренняя ошибка сервера");
+            messages.add("Internal server error");
             return new Response(Response.Status.OK, messages, new HashMap<>());
         }
 

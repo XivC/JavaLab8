@@ -25,8 +25,8 @@ public class CoordinatesBuilderForm extends BuilderForm<Coordinates>{
     void initFields() {
         xField = new JTextField();
         yField = new JTextField();
-        fields.put("X", new Pair<>(xField, false));
-        fields.put("Y", new Pair<>(yField, false));
+        fields.put(res.getString("x"), new Pair<>(xField, false));
+        fields.put(res.getString("y"), new Pair<>(yField, false));
 
     }
     public CoordinatesBuilderForm(Dimension size, Coordinates defaultValue){

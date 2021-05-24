@@ -34,7 +34,7 @@ public class OrganizationBuilderForm extends BuilderForm<Organization> {
         for (OrganizationType t: OrganizationType.values()){
             organizationTypeField.addItem(t);
         }
-        fields.put("Годовой оборот", new Pair<>(annualTurnoverField, false));
-        fields.put("Тип организации", new Pair<>(organizationTypeField, true));
+        fields.put(res.getString("annual_turnover"), new Pair<>(annualTurnoverField, false));
+        fields.put(res.getString("organization_type"), new Pair<>(organizationTypeField, true));
     }
 }

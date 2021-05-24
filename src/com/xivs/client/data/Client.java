@@ -1,6 +1,5 @@
 package com.xivs.client.data;
 
-import com.xivs.client.data.DataProvider;
 import com.xivs.common.Utils.ObjectSerializer;
 import com.xivs.common.dataTransfer.Auth;
 import com.xivs.common.dataTransfer.DataTransference;
@@ -8,13 +7,14 @@ import com.xivs.common.dataTransfer.Request;
 import com.xivs.common.dataTransfer.Response;
 import com.xivs.common.lab.Worker;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.*;
@@ -28,10 +28,10 @@ public class Client extends DataProvider<HashMap<String, DataTransference<?>>> {
     private volatile Auth auth;
     private volatile Thread syncThread;
     private volatile Thread waitConnectionThread;
-    protected volatile ExecutorService responseReaderPool;
     private ArrayList<Runnable> connectionLostEvents;
     private ArrayList<Runnable> connectionRestoredEvents;
-    private volatile boolean restoreNeeded;
+    private volatile boolean syncFlag;
+    private volatile boolean restoreFlag;
     HashMap<String, Worker> workers;
 
     public HashMap<String, Worker> getWorkers(){
@@ -42,153 +42,171 @@ public class Client extends DataProvider<HashMap<String, DataTransference<?>>> {
         Request syncRequest = new Request("sync", new HashMap<>());
 
 
-        while (true){
-
-            if(!isConnected || this.auth.login.equals("")){
-                try {
-                    Thread.sleep(10);
-                    continue;
-                }
-                catch(InterruptedException ex){
-                    Thread.currentThread().interrupt();
-                }
-            }
-
-            syncRequest.setAuth(this.auth);
-            this.sendRequest(this.syncSocket, syncRequest);
-            Callable<Response> readResponseTask = () -> this.receive(this.syncSocket);
-
-            Response resp = readResponseFromPool(readResponseTask);
-
-            if (resp != null && resp.status.equals(Response.Status.OK)){
-                this.data = resp.attachments;
-                this.workers  = (HashMap<String, Worker>) ((this.data).get("workers").get());
-                this.updateEvent();
-                System.out.println("synced!");
-            }
-
-
-        }
-
-    }
-
-    private Response readResponseFromPool(Callable<Response> readResponseTask) {
-        Future<Response> responseFuture = responseReaderPool.submit(readResponseTask);
-        Response resp = null;
-        while (!responseFuture.isDone()) {
+        while (true) {
             try {
+            if (!syncFlag) {
+
+                    Thread.sleep(100);
+                    continue;
 
 
-                resp = responseFuture.get();
+            }
 
-            } catch (InterruptedException | ExecutionException ex) {
-                ex.printStackTrace();
-                break;
+                syncRequest.setAuth(this.auth);
+                this.sendRequestSync(syncRequest);
+
+                Response resp = receiveSync();
+
+                if (resp != null && resp.status.equals(Response.Status.OK)) {
+
+                    this.data = resp.attachments;
+                    this.workers = (HashMap<String, Worker>) ((this.data).get("workers").get());
+                    System.out.println(resp.status);
+                    this.updateEvent();
+                    System.out.println(resp.status);
+                    System.out.println("synced!");
+                }
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+                continue;
             }
         }
 
-        return resp;
+
     }
+
+
 
     public Client() {
         this.auth = new Auth("", "");
-        this.syncThread = new Thread(this::update);
-        this.waitConnectionThread = new Thread(this::waitConnection);
-        this.responseReaderPool = Executors.newCachedThreadPool();
         this.connectionLostEvents = new ArrayList<>();
         this.connectionRestoredEvents = new ArrayList<>();
         this.workers = new HashMap<>();
-
-
+        this.syncThread = new Thread(this::update);
+        this.waitConnectionThread = new Thread(this::waitConnection);
+        this.syncFlag = false;
+        this.restoreFlag = false;
+        this.syncSocket = new Socket();
+        this.socket = new Socket();
+        this.syncThread.start();
+        this.waitConnectionThread.start();
 
 
     }
 
     public void connect(byte[] ip, int port) {
         try {
-            InetAddress address = InetAddress.getByAddress(ip);
             this.port = port;
             this.ip = ip;
-            this.socket = new Socket(address, this.port);
-            this.syncSocket = new Socket(address, this.port);
+            InetAddress address = InetAddress.getByAddress(this.ip);
+            InetSocketAddress addr = new InetSocketAddress(address, this.port);
+            try {
+                this.socket.connect(addr, 100);
+                this.syncSocket.connect(addr, 100);
+            }
+            catch (SocketException ex){
+                this.socket = new Socket(address, port);
+                this.syncSocket = new Socket(address, port);
+            }
             this.isConnected = true;
-            this.restoreNeeded = false;
-            if(!syncThread.isAlive()) syncThread.start();
-            if(!waitConnectionThread.isAlive()) waitConnectionThread.start();
+            this.syncFlag = true;
 
-        } catch (IOException ex) {
+
+        }
+        catch (IOException ex){
+            ex.printStackTrace();
             this.isConnected = false;
         }
+
+
     }
 
-    public void disconnect() {
+    public  void disconnect() {
         try {
-            this.isConnected = false;
-            this.restoreNeeded = false;
-            //this.syncThread.interrupt();
-            //this.waitConnectionThread.interrupt();
             this.socket.close();
             this.syncSocket.close();
-
-
-        } catch (Exception ex) {
-            System.out.println("112231212123123123123");
-            JOptionPane.showMessageDialog(new JFrame(), "Пиздец");
-
+            this.syncFlag = false;
+            this.restoreFlag = false;
             this.isConnected = false;
         }
+        catch (Exception ex) {return;}
+
+
 
     }
 
     public void waitConnection() {
-        while(true){
-            if(!restoreNeeded) {
+        while (true){
+            if (!restoreFlag){
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(100);
                     continue;
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
                 }
+                continue;
             }
+            else {
+                for (Runnable r : connectionLostEvents) {
+                    r.run();
+                }
+                isConnected = false;
 
-        for(Runnable r: connectionLostEvents){
-            r.run();
-        }
-        while (!this.isConnected) {
-            System.out.println("Сервер умер. Пробуем восстановить соединение");
-
-            byte[] ip = this.ip;
-            if (this.socket != null && this.syncSocket != null){
-                try {
-                    this.socket.close();
-                    this.syncSocket.close();
+                while (!isConnected) {
+                    this.syncFlag = false;
+                    System.out.println("Серверу хана");
+                    try {
+                        this.syncSocket.close();
+                        this.socket.close();
+                        InetAddress address = InetAddress.getByAddress(this.ip);
+                        InetSocketAddress addr = new InetSocketAddress(address, this.port);
+                        this.socket = new Socket();
+                        this.syncSocket = new Socket();
+                        this.socket.connect(addr, 300 * 1000);
+                        this.isConnected = true;
+                        this.syncSocket.connect(addr);
+                        this.syncFlag = true;
+                        this.restoreFlag = false;
+                        for (Runnable r : connectionRestoredEvents) {
+                            r.run();
+                        }
+                        System.out.println("сервер снова с вами");
+                    }
+                    catch (IOException ex ){
+                        isConnected = false;
+                        restoreFlag = false;
+                        continue;
+                    }
 
                 }
-                catch(IOException ex){ex.printStackTrace();}
+
+
+
             }
-            this.connect(ip, port);
-
 
         }
-        System.out.println("Соединение восстановлено");
-        for(Runnable r: connectionRestoredEvents){
-            r.run();
-        }
-        this.restoreNeeded = false;
-        }
-
-
-
     }
 
-    public  Response receive() {
-        //return receive(socket);
-        Callable<Response> readResponseTask = () -> this.receive(this.socket);
-        return readResponseFromPool(readResponseTask);
 
 
+    private Response receiveSync(){
+        try {
+            Response resp;
+            InputStream inputStream = syncSocket.getInputStream();
+            ObjectInputStream objectStream = new ObjectInputStream(inputStream);
+            resp = (Response) objectStream.readObject();
+
+            return resp;
+
+        } catch (IOException | ClassNotFoundException | NullPointerException ex) {
+
+
+            return null;
+        }
     }
-    private Response receive(Socket socket){
+
+    public Response receive() {
+
         try {
             Response resp;
             InputStream inputStream = socket.getInputStream();
@@ -199,18 +217,14 @@ public class Client extends DataProvider<HashMap<String, DataTransference<?>>> {
 
         } catch (IOException | ClassNotFoundException | NullPointerException ex) {
 
-            this.isConnected = false;
-            this.restoreNeeded = true;
-            try {
-                socket.close();
-            } catch (IOException ex1) {
-                ex1.printStackTrace();
-            }
-
+            //this.restoreFlag = true;
             return null;
         }
+
     }
-    private  boolean sendRequest(Socket socket, Request rq){
+
+
+    public boolean sendRequest(Request rq) {
         rq.setAuth(this.auth);
         byte[] bytes = ObjectSerializer.serialize(rq);
         try {
@@ -219,20 +233,22 @@ public class Client extends DataProvider<HashMap<String, DataTransference<?>>> {
             return true;
 
         } catch (IOException | NullPointerException ex) {
-            this.isConnected = false;
-            this.restoreNeeded = true;
-            try {
-                socket.close();
-            } catch (IOException ex1) {
-                ex1.printStackTrace();
-            }
-
+            this.restoreFlag = true;
             return false;
         }
-    }
-    public boolean sendRequest(Request rq) {
-        return this.sendRequest(this.socket, rq);
 
+    }
+    public boolean sendRequestSync(Request rq){
+        rq.setAuth(this.auth);
+        byte[] bytes = ObjectSerializer.serialize(rq);
+        try {
+            OutputStream outputStream = syncSocket.getOutputStream();
+            outputStream.write(bytes);
+            return true;
+
+        } catch (IOException | NullPointerException ex) {
+            return false;
+        }
     }
     public boolean isConnected() {
         return this.isConnected;

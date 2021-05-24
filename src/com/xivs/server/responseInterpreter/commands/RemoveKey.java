@@ -20,18 +20,18 @@ public class RemoveKey extends Command {
         String key = (String) rq.attachments.get("key").get();
         ArrayList<String> messages = new ArrayList<>();
         try {
-            messages.add("Элемент [" + manager.removeKey(key, rq.auth.login) + "] удалён");
+            messages.add("Item [" + manager.removeKey(key, rq.auth.login) + "] deleted");
             return new Response(Response.Status.OK, messages, new HashMap<>());
 
         } catch (NotFoundException ex) {
-            messages.add("Элемент не существует");
+            messages.add("Item not found");
         }
         catch(SQLException ex) {
-            messages.add("Внутренняя ошибка сервера");
+            messages.add("Internal server error");
             logger.error(ex.getMessage());
         }
         catch(IllegalDataAccessException ex){
-            messages.add("У вас нет доступа к данному элементу");
+            messages.add("Illegal item access");
         }
 
 

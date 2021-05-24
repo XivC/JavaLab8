@@ -2,6 +2,7 @@ package com.xivs.server;
 
 import ch.qos.logback.classic.Logger;
 import com.xivs.common.Utils.ObjectSerializer;
+import com.xivs.common.Utils.Pair;
 import com.xivs.common.dataTransfer.Request;
 import com.xivs.common.dataTransfer.Response;
 import com.xivs.server.responseInterpreter.Interpreter;
@@ -66,7 +67,7 @@ public class Server {
     protected ForkJoinPool requestExecutorPool;
     protected ForkJoinPool responseSenderPool;
     protected ExecutorService requestReaderPool;
-    private final HashMap<Request, SocketChannel> syncChannels;
+    private final HashMap<String, Pair<Request, SocketChannel>> syncChannels;
 
     public Server(Interpreter interpreter) {
 
@@ -167,11 +168,11 @@ public class Server {
 
     private void synchronizeAll() throws IOException{
         System.out.println(syncChannels.size());
-        for(Request rq: syncChannels.keySet()){
+        for(String key: syncChannels.keySet()){
 
-            SocketChannel client = syncChannels.get(rq);
+            SocketChannel client = syncChannels.get(key).get2();
 
-            this.sendResponse(client , responseSenderPool.invoke(interpreter.buildExecutor(rq)));
+            this.sendResponse(client , responseSenderPool.invoke(interpreter.buildExecutor(syncChannels.get(key).get1())));
 
 
         }
@@ -216,9 +217,10 @@ public class Server {
                                     break;
                                 }
                             }
+
                             if (rq != null) {
                                 if (rq.method.equals("sync")){
-                                    syncChannels.put(rq, client);
+                                    syncChannels.put(rq.auth.login, new Pair<>(rq, client));
 
                                     continue;
                                 }
@@ -244,6 +246,7 @@ public class Server {
                             }
 
                         }
+
 
                     }
 

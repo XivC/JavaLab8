@@ -24,17 +24,17 @@ public class Update extends Command {
         Worker w = (Worker) rq.attachments.get("worker").get();
         try {
             String key = manager.update(id, w, rq.auth.login);
-            messages.add("Элемент [" + key + "] успешно обновлён");
+            messages.add("Item [" + key + "] updated");
             return new Response(Response.Status.OK, messages, new HashMap<>());
         } catch (NotFoundException ex) {
-            messages.add("Элемент не найден");
+            messages.add("Item not updated");
         }
         catch(SQLException ex) {
-            messages.add("Внутренняя ошибка сервера");
+            messages.add("Internal server error");
             logger.error(ex.getMessage());
         }
         catch(IllegalDataAccessException ex){
-            messages.add("У вас нет доступа к данному элементу");
+            messages.add("Illegal item access");
         }
 
 

@@ -1,0 +1,16 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="JavaLab8:jar2">
+    <output-path>$PROJECT_DIR$/out/artifacts/JavaLab8_jar2</output-path>
+    <root id="archive" name="server.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/meta/server_manif/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="JavaLab8" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/logback-core-1.2.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/slf4j-api-1.7.9.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/logback-classic-1.2.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/jdatepicker-1.3.4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/postgresql-42.2.20.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

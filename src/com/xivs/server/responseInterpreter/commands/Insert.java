@@ -23,15 +23,15 @@ public class Insert extends Command {
         Worker w = (Worker) rq.attachments.get("worker").get();
         try {
             manager.insert(key, w, rq.auth.login);
-            messages.add("Элемент успешно добавлен");
+            messages.add("Item added successfully");
             return new Response(Response.Status.OK, messages, new HashMap<>());
         } catch (ExistenceException ex) {
-            messages.add("Элемент уже существует");
+            messages.add("Item not found");
             return new Response(Response.Status.ERROR, messages, new HashMap<>());
 
         }
         catch (SQLException ex) {
-            messages.add("Внутренняя ошибка сервера");
+            messages.add("Internal server error");
             logger.error(ex.getMessage());
             return new Response(Response.Status.ERROR, messages, new HashMap<>());
         }

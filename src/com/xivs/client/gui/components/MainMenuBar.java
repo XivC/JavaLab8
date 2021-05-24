@@ -14,27 +14,28 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.ResourceBundle;
 
 import static com.xivs.client.Application.APP;
 import static com.xivs.client.gui.windows.CreateUpdateObjectWindow.CREATE;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 
 public class MainMenuBar extends JMenuBar {
-
+    ResourceBundle res = APP.getResources();
     public MainMenuBar(MainWindow window){
         super();
-        JMenu instruments = new JMenu("Инструменты");
-        JMenuItem removeAllByPosition = new JMenuItem("Удалить всех опр. должности");
-        JMenuItem createWorker = new JMenuItem("Создать рабочего");
-        JMenuItem executeScript = new JMenuItem("Выполнить скрипт");
-        JMenuItem removeGreater = new JMenuItem("Удалть всех с большей ЗП");
-        JMenuItem clear = new JMenuItem("Очистить");
-        JMenu server = new JMenu("Сервер");
-        JMenuItem info = new JMenuItem ("Информация");
-        JMenuItem exit = new JMenuItem ("Отключиться");
-        JMenu visual = new JMenu("Визуализация");
-        JMenuItem table = new JMenuItem("Таблица");
-        JMenuItem graphics = new JMenuItem("Графика");
+        JMenu instruments = new JMenu(res.getString("instruments"));
+        JMenuItem removeAllByPosition = new JMenuItem(res.getString("remove_all_by_position"));
+        JMenuItem createWorker = new JMenuItem(res.getString("create_worker"));
+        JMenuItem executeScript = new JMenuItem(res.getString("execute_script"));
+        JMenuItem removeGreater = new JMenuItem(res.getString("remove_greater"));
+        JMenuItem clear = new JMenuItem(res.getString("clear"));
+        JMenu server = new JMenu(res.getString("server"));
+        JMenuItem info = new JMenuItem (res.getString("information"));
+        JMenuItem exit = new JMenuItem (res.getString("disconnect"));
+        JMenu visual = new JMenu(res.getString("visualization"));
+        JMenuItem table = new JMenuItem(res.getString("table"));
+        JMenuItem graphics = new JMenuItem(res.getString("graphics"));
         createWorker.addActionListener((e)-> new CreateUpdateObjectWindow(CREATE, null));
         removeAllByPosition.addActionListener((e)->new RemoveAllByPositionWindow());
         executeScript.addActionListener((e)->{
@@ -45,10 +46,10 @@ public class MainMenuBar extends JMenuBar {
             try {
                 Interpreter exe_inter = new Interpreter(new FileInputManager(f), new VoidOutputManager(), APP.client);
                 new Thread(exe_inter::run).start();
-                String message = "Скрипт поставлен на исполнение";
+                String message = res.getString("script_executing");
                 JOptionPane.showMessageDialog(new JFrame(), message, "Success", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException ex) {
-                String message = "Скрипт или файл сломался :(";
+                String message = res.getString("script_error");
                 JOptionPane.showMessageDialog(new JFrame(), message, "Error", JOptionPane.ERROR_MESSAGE);
             }
 
@@ -65,8 +66,8 @@ public class MainMenuBar extends JMenuBar {
             for (Window w: Window.getWindows()){
                 w.dispose();
             }
-
-            new LoginWindow(new Dimension(500, 300));
+            APP.client.disconnect();
+            new LoginWindow(new Dimension(500, 300), APP.getLocale());
         });
         table.addActionListener((e)->window.setVisualization(1));
         graphics.addActionListener((e)->window.setVisualization(2));

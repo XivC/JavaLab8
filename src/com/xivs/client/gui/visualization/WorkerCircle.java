@@ -86,7 +86,8 @@ public class WorkerCircle extends Ellipse2D{
             return;
         }
 
-
+        velocity_x *= 0.9995;
+        velocity_y *= 0.9995;
         double x_accel = accel * (targetX - centreX)/(range+1);
         double y_accel = accel * (targetY - centreY)/(range+1);
 

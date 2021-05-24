@@ -1,5 +1,6 @@
 package com.xivs;
 
+import com.xivs.client.Application;
 import com.xivs.client.data.*;
 import com.xivs.client.gui.components.FilteringForm;
 import com.xivs.client.gui.components.SortingForm;
@@ -18,6 +19,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import static javax.swing.JFrame.setDefaultLookAndFeelDecorated;
 
@@ -33,10 +35,14 @@ public class ClientMain {
         }
 
 
-
-
+        //Application.APP.client.connect(new byte[]{127,0,0,1}, 13337);
+        //(new Interpreter(new CommandLineInputManager(), new CommandLineOutManager(), Application.APP.client)).run();
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        new LoginWindow(new Dimension(500, 300));
+        //
+        //
+        Locale l = Locale.getDefault();
+        Application.APP.setLocale(l);
+        new LoginWindow(new Dimension(500, 300), l);//Locale.getDefault());
         //JFrame temp = new JFrame();
         //temp.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         //temp.setVisible(true);

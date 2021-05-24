@@ -17,7 +17,7 @@ public class RemoveGreater extends Command {
         Float salary = (Float) rq.attachments.get("salary").get();
         ArrayList<String> messages = new ArrayList<>();
         manager.removeGreater(salary, rq.auth.login);
-        messages.add("Выполнено");
+        messages.add("Success");
 
         return new Response(Response.Status.OK, messages, new HashMap<>());
 
